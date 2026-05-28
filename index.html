@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEO Scoring Framework - Specification & Flowchart Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- KaTeX CSS for beautiful textbook-style math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  
+  <!-- KaTeX JS Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind Config for Theme customisation -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f4ff',
+              100: '#d9e2ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Styling scrollbars inside mathematical containers */
+    .math-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .math-scroll::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    .math-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col antialiased">
+
+  <!-- TOP BAR -->
+  <header class="border-b border-slate-800 bg-slate-950 px-6 py-4 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Product Spec</span>
+          <span class="text-slate-500 text-xs">v1.3 Textbook Edition</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-white mt-1">GEO Scoring Framework</h1>
+        <p class="text-slate-400 text-sm mt-0.5">Mathematical derivation, architectural flow, and engineering implementation specs.</p>
+      </div>
+      
+      <!-- Quick Metric Summary in Header -->
+      <div class="flex items-center gap-6 bg-slate-900 border border-slate-800 p-3 rounded-lg self-start">
+        <div>
+          <span class="block text-[10px] text-slate-500 font-semibold uppercase">Global Max Score (S_max)</span>
+          <span id="header-s-max" class="text-lg font-bold text-blue-400">10.0</span>
+        </div>
+        <div class="h-8 w-px bg-slate-800"></div>
+        <div>
+          <span class="block text-[10px] text-slate-500 font-semibold uppercase">Demo Model GEO Score</span>
+          <span id="header-overall-geo" class="text-lg font-bold text-emerald-400">0.00%</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- LEFT PANEL: Flowchart & Tabs Selector (7 Cols) -->
+    <section class="lg:col-span-7 flex flex-col gap-6">
+      
+      <!-- NAVIGATION TABS -->
+      <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex">
+        <button id="tab-btn-flow" onclick="switchTab('flow')" class="flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 bg-blue-600 text-white shadow-lg">
+          Flowchart Diagram
+        </button>
+        <button id="tab-btn-code" onclick="switchTab('code')" class="flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 text-slate-400 hover:text-white">
+          Implementation Code
+        </button>
+        <button id="tab-btn-schema" onclick="switchTab('schema')" class="flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 text-slate-400 hover:text-white">
+          Database Schemas
+        </button>
+      </div>
+
+      <!-- TAB CONTENT: FLOWCHART -->
+      <div id="tab-content-flow" class="space-y-6">
+        
+        <!-- Interactive Node: Step 1 (Prompt Level) -->
+        <div onclick="inspectStep('prompt')" id="node-prompt" class="group relative cursor-pointer bg-slate-950 border-2 border-blue-500 p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] hover:border-blue-400">
+          <div class="absolute -top-3 left-4 px-3 py-0.5 bg-blue-500 text-white text-xs font-bold rounded-md uppercase tracking-wider shadow">Step 1: Prompt-Level Core</div>
+          <div class="flex justify-between items-start mt-1">
+            <div>
+              <h3 class="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">Atomic GEO Score ($S_{ij}$)</h3>
+              <p class="text-xs text-slate-400 mt-1 font-sans">Computes specific performance of brand mentions for individual prompts on individual engines.</p>
+            </div>
+            <span class="text-slate-500 text-xs font-mono bg-slate-900 border border-slate-800 px-2 py-1 rounded">Inputs: M, R, T, I</span>
+          </div>
+          
+          <!-- Book-Style Equation Container -->
+          <div class="mt-4 bg-slate-900/80 p-4 rounded-lg border border-slate-800/80 relative overflow-hidden">
+            <span class="text-[10px] text-slate-500 font-bold block mb-2 tracking-widest">TEXTBOOK MATHEMATICAL NOTATION</span>
+            <div class="text-blue-300 py-2 overflow-x-auto math-scroll text-center text-lg">
+              $$S_{ij} = M_{ij} \times R_{ij} \times T_{ij} \times I_i$$
+            </div>
+            
+            <span class="text-[10px] text-slate-500 font-bold block my-2 tracking-widest border-t border-slate-800/60 pt-2">PLAIN ENGLISH EXPLANATION</span>
+            <div class="text-slate-300 text-xs md:text-sm italic leading-relaxed">
+              Prompt Score = Mention Weight $\times$ Rank Weight $\times$ Sentiment Weight $\times$ Intent Weight
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center text-xs text-slate-500 mt-3">
+            <span>Click to configure inputs & weights</span>
+            <span class="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">Inspect details →</span>
+          </div>
+        </div>
+
+        <!-- Flow Connector 1 -->
+        <div class="flex flex-col items-center py-2">
+          <div class="h-8 w-1 bg-gradient-to-b from-blue-500 to-indigo-500 rounded"></div>
+          <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider my-1 bg-slate-950/80 px-3 py-1 rounded-full border border-slate-800">
+            Combine & Normalize with $S_{\max}$
+          </div>
+          <div class="h-8 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded"></div>
+        </div>
+
+        <!-- Interactive Node: Step 2 (Cluster Level) -->
+        <div onclick="inspectStep('cluster')" id="node-cluster" class="group relative cursor-pointer bg-slate-950 border border-slate-800 p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] hover:border-purple-400">
+          <div class="absolute -top-3 left-4 px-3 py-0.5 bg-purple-600 text-white text-xs font-bold rounded-md uppercase tracking-wider shadow">Step 2: Cluster-Level Layer</div>
+          <div class="flex justify-between items-start mt-1">
+            <div>
+              <h3 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">Cluster Score ($CS_{lj}$)</h3>
+              <p class="text-xs text-slate-400 mt-1">Groups prompts by semantic cluster/business category to prevent volume-bias and assess intent segments.</p>
+            </div>
+            <span class="text-slate-500 text-xs font-mono bg-slate-900 border border-slate-800 px-2 py-1 rounded">Inputs: $S_{ij}$, $S_{\max}$</span>
+          </div>
+
+          <!-- Book-Style Equation Container -->
+          <div class="mt-4 bg-slate-900/80 p-4 rounded-lg border border-slate-800/80 relative overflow-hidden">
+            <span class="text-[10px] text-slate-500 font-bold block mb-2 tracking-widest">TEXTBOOK MATHEMATICAL NOTATION</span>
+            <div class="text-purple-300 py-2 overflow-x-auto math-scroll text-center text-lg">
+              $$CS_{lj} = \frac{\sum_{p_i \in P_l} S_{ij}}{n_l \times S_{\max}} \times 100$$
+            </div>
+            
+            <span class="text-[10px] text-slate-500 font-bold block my-2 tracking-widest border-t border-slate-800/60 pt-2">PLAIN ENGLISH EXPLANATION</span>
+            <div class="text-slate-300 text-xs md:text-sm italic leading-relaxed">
+              Cluster Score = [ (Sum of Prompt Scores in Cluster) / (Number of Prompts $\times$ Max Possible Score) ] $\times$ 100
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs text-slate-500 mt-3">
+            <span>Click to configure cluster settings</span>
+            <span class="text-purple-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">Inspect details →</span>
+          </div>
+        </div>
+
+        <!-- Flow Connector 2 -->
+        <div class="flex flex-col items-center py-2">
+          <div class="h-8 w-1 bg-gradient-to-b from-purple-500 to-amber-500 rounded"></div>
+          <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider my-1 bg-slate-950/80 px-3 py-1 rounded-full border border-slate-800">
+            Apply Weighted Clusters
+          </div>
+          <div class="h-8 w-1 bg-gradient-to-b from-amber-500 to-emerald-500 rounded"></div>
+        </div>
+
+        <!-- Interactive Node: Step 3 (Engine Level) -->
+        <div onclick="inspectStep('engine')" id="node-engine" class="group relative cursor-pointer bg-slate-950 border border-slate-800 p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] hover:border-amber-400">
+          <div class="absolute -top-3 left-4 px-3 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-md uppercase tracking-wider shadow">Step 3: Engine-Level Weighting</div>
+          <div class="flex justify-between items-start mt-1">
+            <div>
+              <h3 class="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">Engine GEO Score ($EG_j$)</h3>
+              <p class="text-xs text-slate-400 mt-1">Consolidates different cluster performances into a single robust performance index per LLM engine.</p>
+            </div>
+            <span class="text-slate-500 text-xs font-mono bg-slate-900 border border-slate-800 px-2 py-1 rounded">Inputs: $CS_{lj}$, Cluster Weights ($W_l$)</span>
+          </div>
+
+          <!-- Book-Style Equation Container -->
+          <div class="mt-4 bg-slate-900/80 p-4 rounded-lg border border-slate-800/80 relative overflow-hidden">
+            <span class="text-[10px] text-slate-500 font-bold block mb-2 tracking-widest">TEXTBOOK MATHEMATICAL NOTATION</span>
+            <div class="text-amber-300 py-2 overflow-x-auto math-scroll text-center text-lg">
+              $$EG_j = \sum_{l=1}^{k} W_l \times CS_{lj}$$
+            </div>
+            
+            <span class="text-[10px] text-slate-500 font-bold block my-2 tracking-widest border-t border-slate-800/60 pt-2">PLAIN ENGLISH EXPLANATION</span>
+            <div class="text-slate-300 text-xs md:text-sm italic leading-relaxed">
+              Engine GEO Score = Sum of (Cluster Weight $\times$ Cluster Score) for all Clusters
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs text-slate-500 mt-3">
+            <span>Click to configure engine weights</span>
+            <span class="text-amber-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">Inspect details →</span>
+          </div>
+        </div>
+
+        <!-- Flow Connector 3 -->
+        <div class="flex flex-col items-center py-2">
+          <div class="h-8 w-1 bg-gradient-to-b from-amber-500 to-emerald-500 rounded"></div>
+          <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider my-1 bg-slate-950/80 px-3 py-1 rounded-full border border-slate-800">
+            Incorporate Platform Market Shares
+          </div>
+          <div class="h-8 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded"></div>
+        </div>
+
+        <!-- Interactive Node: Step 4 (Overall GEO Score) -->
+        <div onclick="inspectStep('global')" id="node-global" class="group relative cursor-pointer bg-slate-950 border border-slate-800 p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] hover:border-emerald-400">
+          <div class="absolute -top-3 left-4 px-3 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-md uppercase tracking-wider shadow">Step 4: Unified GEO Layer</div>
+          <div class="flex justify-between items-start mt-1">
+            <div>
+              <h3 class="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">Unified Global Score ($GEO$)</h3>
+              <p class="text-xs text-slate-400 mt-1">A singular benchmark representing brand presence across the entire generative engine ecosystem.</p>
+            </div>
+            <span class="text-slate-500 text-xs font-mono bg-slate-900 border border-slate-800 px-2 py-1 rounded">Inputs: $EG_j$, Platform Shares ($A_j$)</span>
+          </div>
+
+          <!-- Book-Style Equation Container -->
+          <div class="mt-4 bg-slate-900/80 p-4 rounded-lg border border-slate-800/80 relative overflow-hidden">
+            <span class="text-[10px] text-slate-500 font-bold block mb-2 tracking-widest">TEXTBOOK MATHEMATICAL NOTATION</span>
+            <div class="text-emerald-300 py-2 overflow-x-auto math-scroll text-center text-lg">
+              $$GEO = \sum_{j=1}^{m} A_j \times EG_j$$
+            </div>
+            
+            <span class="text-[10px] text-slate-500 font-bold block my-2 tracking-widest border-t border-slate-800/60 pt-2">PLAIN ENGLISH EXPLANATION</span>
+            <div class="text-slate-300 text-xs md:text-sm italic leading-relaxed">
+              Global GEO Score = Sum of (Platform Weight $\times$ Engine GEO Score) across all Engines
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs text-slate-500 mt-3">
+            <span>Click to see complete collapsed master formula</span>
+            <span class="text-emerald-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">Inspect details →</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB CONTENT: CODE -->
+      <div id="tab-content-code" class="hidden space-y-4">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-base font-bold text-white">Python Class Implementation</h3>
+            <button onclick="copyCode()" class="text-xs bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded text-slate-300 hover:text-white transition-colors">
+              Copy to Clipboard
+            </button>
+          </div>
+          <p class="text-xs text-slate-400 mb-4 font-sans">
+            Production-grade, highly-commented Python class. Designed to prevent calculation inaccuracies (e.g., absent rank checks, zero divisors, validation bounds). Supports strict type-hinting.
+          </p>
+          <div class="relative font-sans">
+            <pre class="bg-slate-900 text-xs text-emerald-400 p-4 rounded-lg overflow-x-auto max-h-[500px] border border-slate-800 font-mono whitespace-pre" id="code-block">
+"""
+GEO Framework Metric Engine
+Standard mathematical implementation avoiding LaTeX parser dependency.
+"""
+
+class GEOScoringEngine:
+    def __init__(self, m_max: float = 5.0, i_max: float = 2.0):
+        self.M_MAX = m_max  # Theoretical max mention value
+        self.I_MAX = i_max  # Theoretical max intent priority
+        self.S_MAX = self.M_MAX * self.I_MAX  # Expected Max: 10.0
+
+    def calculate_prompt_score(self, mention_weight: float, rank: int, sentiment_weight: float, intent_weight: float) -> float:
+        """
+        Step 1: Compute Atomic Prompt Level Score
+        Formula: S_ij = M_ij * R_ij * T_ij * I_i
+        """
+        # Rank weight: If absent or invalid, rank factor is 0, else 1/rank
+        rank_weight = 1.0 / rank if (rank and rank > 0) else 0.0
+        
+        # Ensure inputs lie in theoretical bounds
+        clean_mention = min(max(mention_weight, 0.0), self.M_MAX)
+        clean_sentiment = min(max(sentiment_weight, 0.0), 1.0)
+        clean_intent = min(max(intent_weight, 0.0), self.I_MAX)
+
+        return clean_mention * rank_weight * clean_sentiment * clean_intent
+
+    def calculate_cluster_score(self, prompts_in_cluster: list, engine_id: str) -> float:
+        """
+        Step 2: Calculate normalized Cluster-Level Score for an Engine
+        Formula: CS_lj = (Sum S_ij / (n_l * S_max)) * 100
+        """
+        if not prompts_in_cluster:
+            return 0.0
+        
+        sum_prompt_scores = 0.0
+        for prompt in prompts_in_cluster:
+            mentions = prompt.get("mentions", {})
+            ranks = prompt.get("ranks", {})
+            sentiments = prompt.get("sentiments", {})
+            
+            s_ij = self.calculate_prompt_score(
+                mention_weight=float(mentions.get(engine_id, 0.0)),
+                rank=int(ranks.get(engine_id, 0)),
+                sentiment_weight=float(sentiments.get(engine_id, 0.0)),
+                intent_weight=float(prompt.get("intentWeight", 0.0))
+            )
+            sum_prompt_scores += s_ij
+
+        prompt_count = len(prompts_in_cluster)
+        return (sum_prompt_scores / (prompt_count * self.S_MAX)) * 100.0
+
+    def calculate_engine_score(self, clusters: dict, cluster_weights: dict, engine_id: str) -> float:
+        """
+        Step 3: Calculate Engine Level score
+        Formula: EG_j = Sum( W_l * CS_lj )
+        """
+        engine_score = 0.0
+        
+        # Ensure cluster weights are normalized (sum to 1)
+        weight_sum = sum(cluster_weights.values())
+        if weight_sum == 0:
+            return 0.0
+            
+        for cluster_id, prompts in clusters.items():
+            raw_weight = cluster_weights.get(cluster_id, 0.0)
+            normalized_weight = raw_weight / weight_sum
+            
+            cluster_score = self.calculate_cluster_score(prompts, engine_id)
+            engine_score += normalized_weight * cluster_score
+            
+        return engine_score
+
+    def calculate_global_geo(self, engines: list, clusters: dict, cluster_weights: dict, platform_weights: dict) -> float:
+        """
+        Step 4: Calculate final overall GEO Score
+        Formula: GEO = Sum( A_j * EG_j )
+        """
+        global_geo = 0.0
+        platform_weight_sum = sum(platform_weights.values())
+        if platform_weight_sum == 0:
+            return 0.0
+
+        for engine_id in engines:
+            raw_platform_weight = platform_weights.get(engine_id, 0.0)
+            normalized_platform_weight = raw_platform_weight / platform_weight_sum
+            
+            engine_score = self.calculate_engine_score(clusters, cluster_weights, engine_id)
+            global_geo += normalized_platform_weight * engine_score
+            
+        return global_geo</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CONTENT: DATABASE SCHEMAS -->
+      <div id="tab-content-schema" class="hidden space-y-4">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <h3 class="text-base font-bold text-white mb-2">Input Payload Schema</h3>
+          <p class="text-xs text-slate-400 mb-4">
+            This represents the structured schema that data collection scrapers or LLM evaluators should output to ingest directly into the calculator.
+          </p>
+          <pre class="bg-slate-900 text-xs text-blue-400 p-4 rounded-lg overflow-x-auto border border-slate-800 font-mono whitespace-pre">{
+  "evaluationId": "eval_2026_q2_brand",
+  "meta": {
+    "targetBrand": "AlphaCloud",
+    "timestamp": "2026-05-28T23:52:00Z"
+  },
+  "prompts": [
+    {
+      "promptId": "p_001",
+      "text": "What is the best alternative to AWS for container hosting?",
+      "clusterId": "comparison",
+      "intentWeight": 1.5, // Commercial Intent
+      "mentions": {
+        "chatgpt": 3,      // Recommendation
+        "gemini": 1,       // Plain Mention
+        "perplexity": 5    // Citation
+      },
+      "ranks": {
+        "chatgpt": 2,      // Rank weight factor = 1/2
+        "gemini": 4,       // Rank weight factor = 1/4
+        "perplexity": 1    // Rank weight factor = 1/1
+      },
+      "sentiments": {
+        "chatgpt": 1.0,    // Positive
+        "gemini": 0.7,     // Neutral
+        "perplexity": 1.0  // Positive
+      }
+    }
+  ]
+}</pre>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANEL: Interactive Inspector & Live Simulator (5 Cols) -->
+    <section class="lg:col-span-5 flex flex-col gap-6">
+      
+      <!-- INSPECTOR PANEL -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-xl sticky top-24">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          <h2 id="inspector-title" class="text-lg font-bold text-white">Active Inspector: Step 1</h2>
+        </div>
+        
+        <p id="inspector-desc" class="text-sm text-slate-400 mb-4">
+          Modify variables below to simulate calculations instantly. All layers are reactive and calculate downstream real-time scores.
+        </p>
+
+        <!-- FORMULA CARD -->
+        <div class="bg-slate-900 p-4 rounded-lg border border-slate-800 mb-5">
+          <span class="text-[10px] text-slate-500 font-semibold block uppercase mb-2">Book-Style Step Equation</span>
+          <div id="inspector-formula" class="text-blue-400 text-lg py-2 flex justify-center items-center overflow-x-auto math-scroll">
+            <!-- Dynamic KaTeX renders here -->
+            $$S_{ij} = M_{ij} \times R_{ij} \times T_{ij} \times I_i$$
+          </div>
+          <p id="inspector-math-detail" class="text-xs text-slate-400 mt-2 leading-relaxed border-t border-slate-800/80 pt-2">
+            The core engine of GEO visibility. It measures performance on a single query.
+          </p>
+        </div>
+
+        <!-- SIMULATOR CONTROLS -->
+        <div class="space-y-4">
+          <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Configure Interactive Parameters</h3>
+          
+          <!-- STEP 1 INPUTS -->
+          <div id="controls-step-1" class="space-y-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-medium">Mention Quality ($M_{ij}$)</label>
+              <select id="sim-mention" onchange="runSimulation()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-1.5 px-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                <option value="0">No mention (0.0)</option>
+                <option value="1">Plain mention (1.0)</option>
+                <option value="3">Recommendation (3.0)</option>
+                <option value="5" selected>Citation/source link (5.0)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Rank Position ($r$)</label>
+                <select id="sim-rank" onchange="runSimulation()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-1.5 px-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                  <option value="1" selected>Rank 1 (1.0 weight)</option>
+                  <option value="2">Rank 2 (0.5 weight)</option>
+                  <option value="3">Rank 3 (0.33 weight)</option>
+                  <option value="4">Rank 4 (0.25 weight)</option>
+                  <option value="0">Not Mentioned (0.0 weight)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Sentiment ($T$)</label>
+                <select id="sim-sentiment" onchange="runSimulation()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-1.5 px-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                  <option value="1.0" selected>Positive (1.0 weight)</option>
+                  <option value="0.7">Neutral (0.7 weight)</option>
+                  <option value="0.2">Negative (0.2 weight)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-medium">Prompt Business Value / Intent ($I$)</label>
+              <select id="sim-intent" onchange="runSimulation()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-1.5 px-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                <option value="0.5">Informational (0.5 weight)</option>
+                <option value="1.5">Commercial (1.5 weight)</option>
+                <option value="2.0" selected>Transactional (2.0 weight)</option>
+              </select>
+            </div>
+            
+            <div class="p-3 bg-blue-950/40 rounded-lg border border-blue-900/30">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-blue-300">Prompt Score ($S_{ij}$) Result:</span>
+                <span id="result-prompt-score" class="text-lg font-bold text-blue-400 font-mono">10.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2 INPUTS -->
+          <div id="controls-step-2" class="space-y-3 hidden border-t border-slate-800/80 pt-3">
+            <h4 class="text-xs font-semibold text-purple-400 uppercase">Interactive Cluster Settings</h4>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-medium">Number of Prompts in Cluster ($n_l$)</label>
+              <input type="number" id="sim-cluster-count" value="5" min="1" oninput="runSimulation()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-1.5 px-3 text-sm text-slate-100 focus:outline-none focus:border-purple-500 font-mono font-bold">
+            </div>
+            <div class="p-3 bg-purple-950/40 rounded-lg border border-purple-900/30">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs text-purple-300">Cluster Score ($CS_{lj}$) Result:</span>
+                <span id="result-cluster-score" class="text-base font-bold text-purple-400 font-mono">20.00%</span>
+              </div>
+              <p class="text-[10px] text-slate-400 leading-normal">
+                Based on current Prompt Score above representing average score across the cluster. (Max Cluster $S_{\max} = 10.0$)
+              </p>
+            </div>
+          </div>
+
+          <!-- STEP 3 INPUTS -->
+          <div id="controls-step-3" class="space-y-3 hidden border-t border-slate-800/80 pt-3">
+            <h4 class="text-xs font-semibold text-amber-500 uppercase">Interactive Engine Weights ($W_l$)</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Transactional (Weight: 50%)</span>
+                <input type="range" id="w-trans" min="0" max="100" value="50" oninput="adjustWeights('cluster', 'w-trans')" class="w-24 accent-amber-500">
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Commercial (Weight: 30%)</span>
+                <input type="range" id="w-comm" min="0" max="100" value="30" oninput="adjustWeights('cluster', 'w-comm')" class="w-24 accent-amber-500">
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Informational (Weight: 20%)</span>
+                <input type="range" id="w-info" min="0" max="100" value="20" oninput="adjustWeights('cluster', 'w-info')" class="w-24 accent-amber-500">
+              </div>
+            </div>
+            <div class="p-3 bg-amber-950/40 rounded-lg border border-amber-900/30">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-amber-300">Engine Score ($EG_j$) Result:</span>
+                <span id="result-engine-score" class="text-base font-bold text-amber-400 font-mono">20.00%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4 INPUTS -->
+          <div id="controls-step-4" class="space-y-3 hidden border-t border-slate-800/80 pt-3">
+            <h4 class="text-xs font-semibold text-emerald-500 uppercase">Platform Shares ($A_j$)</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">ChatGPT (Weight: 40%)</span>
+                <input type="range" id="a-chatgpt" min="0" max="100" value="40" oninput="adjustWeights('platform', 'a-chatgpt')" class="w-24 accent-emerald-500">
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Gemini (Weight: 25%)</span>
+                <input type="range" id="a-gemini" min="0" max="100" value="25" oninput="adjustWeights('platform', 'a-gemini')" class="w-24 accent-emerald-500">
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Claude (Weight: 20%)</span>
+                <input type="range" id="a-claude" min="0" max="100" value="20" oninput="adjustWeights('platform', 'a-claude')" class="w-24 accent-emerald-500">
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-xs text-slate-400">Perplexity (Weight: 15%)</span>
+                <input type="range" id="a-perp" min="0" max="100" value="15" oninput="adjustWeights('platform', 'a-perp')" class="w-24 accent-emerald-500">
+              </div>
+            </div>
+            <div class="p-3 bg-emerald-950/40 rounded-lg border border-emerald-900/30">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-emerald-300">Global GEO Score (GEO):</span>
+                <span id="result-global-score" class="text-lg font-bold text-emerald-400 font-mono">20.00%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950 px-6 py-6 mt-12 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>© 2026 Enterprise Search Engine Optimization (GEO) Standards Working Group.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-slate-300">API Docs</a>
+        <span class="text-slate-700">|</span>
+        <a href="#" class="hover:text-slate-300">Audit Guidelines</a>
+        <span class="text-slate-700">|</span>
+        <a href="#" class="hover:text-slate-300">Verification Spec</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT FOR DYNAMIC SPEC INTERACTIVITY -->
+  <script>
+    // Dictionary of LaTeX equations to update the active inspector
+    const latexFormulas = {
+      prompt: "S_{ij} = M_{ij} \\times R_{ij} \\times T_{ij} \\times I_i",
+      cluster: "CS_{lj} = \\frac{\\sum_{p_i \\in P_l} S_{ij}}{n_l \\times S_{\\max}} \\times 100",
+      engine: "EG_j = \\sum_{l=1}^{k} W_l \\times CS_{lj}",
+      global: "GEO = \\sum_{j=1}^{m} A_j \\left( \\sum_{l=1}^{k} W_l \\left( \\frac{\\sum_{p_i \\in P_l} (M_{ij} \\times R_{ij} \\times T_{ij} \\times I_i)}{n_l \\times S_{\\max}} \\times 100 \\right) \\right)"
+    };
+
+    // Safe mathematical typesetting helper
+    function renderEquation(elementId, latexStr) {
+      const el = document.getElementById(elementId);
+      if (el && typeof katex !== 'undefined') {
+        try {
+          katex.render(latexStr, el, { displayMode: true, throwOnError: false });
+        } catch (err) {
+          el.innerHTML = "$$" + latexStr + "$$";
+        }
+      }
+    }
+
+    // Initialize KaTeX over entire static page
+    function initializeMath() {
+      if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Tab switching engine
+    function switchTab(tab) {
+      // Buttons reset
+      document.getElementById('tab-btn-flow').className = "flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 " + (tab === 'flow' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white');
+      document.getElementById('tab-btn-code').className = "flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 " + (tab === 'code' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white');
+      document.getElementById('tab-btn-schema').className = "flex-1 py-2.5 px-4 text-center rounded-lg text-sm font-semibold transition-all duration-150 " + (tab === 'schema' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white');
+
+      // Content blocks toggle
+      document.getElementById('tab-content-flow').classList.toggle('hidden', tab !== 'flow');
+      document.getElementById('tab-content-code').classList.toggle('hidden', tab !== 'code');
+      document.getElementById('tab-content-schema').classList.toggle('hidden', tab !== 'schema');
+    }
+
+    // Step Inspector controller
+    function inspectStep(step) {
+      // Highlight current visual node, dim others
+      const nodes = {
+        prompt: { id: 'node-prompt', color: 'border-blue-500', hover: 'hover:border-blue-400' },
+        cluster: { id: 'node-cluster', color: 'border-purple-600', hover: 'hover:border-purple-400' },
+        engine: { id: 'node-engine', color: 'border-amber-500', hover: 'hover:border-amber-400' },
+        global: { id: 'node-global', color: 'border-emerald-500', hover: 'hover:border-emerald-400' }
+      };
+
+      for (const [key, val] of Object.entries(nodes)) {
+        const el = document.getElementById(val.id);
+        if (key === step) {
+          el.className = `group relative cursor-pointer bg-slate-950 border-2 ${val.color} p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] ${val.hover}`;
+        } else {
+          el.className = `group relative cursor-pointer bg-slate-950 border border-slate-800 p-5 rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] ${val.hover}`;
+        }
+      }
+
+      // Update Inspector panel strings & toggle control groups
+      const title = document.getElementById('inspector-title');
+      const desc = document.getElementById('inspector-desc');
+      const detail = document.getElementById('inspector-math-detail');
+
+      // Hide all dynamic simulator panels first
+      document.getElementById('controls-step-2').classList.add('hidden');
+      document.getElementById('controls-step-3').classList.add('hidden');
+      document.getElementById('controls-step-4').classList.add('hidden');
+
+      // Dynamically typeset equation
+      renderEquation('inspector-formula', latexFormulas[step]);
+
+      if (step === 'prompt') {
+        title.innerHTML = "Active Inspector: Step 1 (Prompt Level)";
+        desc.innerHTML = "Evaluates granular brand visibility weight against specific search inputs.";
+        detail.innerHTML = "Every query processed by scrapers or LLM pipelines calculates this value. It evaluates positional context, mention strength, tone sentiment, and core commercial intent priority.";
+      } else if (step === 'cluster') {
+        title.innerHTML = "Active Inspector: Step 2 (Cluster Level)";
+        desc.innerHTML = "Mitigates bias from high volumes of cheap queries, grouping prompts into business pillars.";
+        detail.innerHTML = "To prevent volume asymmetry from destroying accuracy (e.g. 100 low-value informational queries washing out 5 transactional buy queries), prompt evaluation is grouped and normalized per cluster, creating clean performance scores capped at 100%.";
+        document.getElementById('controls-step-2').classList.remove('hidden');
+      } else if (step === 'engine') {
+        title.innerHTML = "Active Inspector: Step 3 (Engine Level)";
+        desc.innerHTML = "Weights the business values of different semantic clusters into a single LLM performance index.";
+        detail.innerHTML = "By defining business priority weights (W_l) where the sum of weights is 1.0, the framework ensures search optimizations targeted at Transactional or Commercial clusters accurately boost the final platform scorecard.";
+        document.getElementById('controls-step-2').classList.remove('hidden');
+        document.getElementById('controls-step-3').classList.remove('hidden');
+      } else if (step === 'global') {
+        title.innerHTML = "Active Inspector: Step 4 (Unified GEO Layer)";
+        desc.innerHTML = "Applies real-world marketplace weight to represent actual visibility share across platforms.";
+        detail.innerHTML = "This master level brings mathematical integration. It weights engine performance with platform traffic share coefficients. If ChatGPT captures 40% of search queries and Gemini 25%, their corresponding scores are scaled dynamically.";
+        document.getElementById('controls-step-2').classList.remove('hidden');
+        document.getElementById('controls-step-3').classList.remove('hidden');
+        document.getElementById('controls-step-4').classList.remove('hidden');
+      }
+    }
+
+    // Weight auto-balancing logic (keeps sliders summed to 100%)
+    function adjustWeights(type, adjustedInputId) {
+      if (type === 'cluster') {
+        const trans = document.getElementById('w-trans');
+        const comm = document.getElementById('w-comm');
+        const info = document.getElementById('w-info');
+
+        let sum = parseInt(trans.value) + parseInt(comm.value) + parseInt(info.value);
+        if (sum !== 100) {
+          const diff = 100 - sum;
+          // Distribute remaining diff between other inputs
+          if (adjustedInputId === 'w-trans') {
+            const split = diff / 2;
+            comm.value = Math.max(0, parseInt(comm.value) + Math.ceil(split));
+            info.value = Math.max(0, parseInt(info.value) + Math.floor(split));
+          } else if (adjustedInputId === 'w-comm') {
+            const split = diff / 2;
+            trans.value = Math.max(0, parseInt(trans.value) + Math.ceil(split));
+            info.value = Math.max(0, parseInt(info.value) + Math.floor(split));
+          } else {
+            const split = diff / 2;
+            trans.value = Math.max(0, parseInt(trans.value) + Math.ceil(split));
+            comm.value = Math.max(0, parseInt(comm.value) + Math.floor(split));
+          }
+        }
+      } else if (type === 'platform') {
+        const chat = document.getElementById('a-chatgpt');
+        const gem = document.getElementById('a-gemini');
+        const cld = document.getElementById('a-claude');
+        const prp = document.getElementById('a-perp');
+
+        let sum = parseInt(chat.value) + parseInt(gem.value) + parseInt(cld.value) + parseInt(prp.value);
+        if (sum !== 100) {
+          const diff = 100 - sum;
+          const partners = [chat, gem, cld, prp].filter(el => el.id !== adjustedInputId);
+          const rawSplit = diff / partners.length;
+          
+          partners.forEach((el, index) => {
+            const val = parseInt(el.value);
+            const adjustment = index === 0 ? Math.ceil(rawSplit) : Math.floor(rawSplit);
+            el.value = Math.max(0, val + adjustment);
+          });
+        }
+      }
+      runSimulation();
+    }
+
+    // Comprehensive simulation running dynamically on input change
+    function runSimulation() {
+      // Step 1 Extraction
+      const M = parseFloat(document.getElementById('sim-mention').value);
+      const r_val = parseInt(document.getElementById('sim-rank').value);
+      const R = r_val > 0 ? (1 / r_val) : 0;
+      const T = parseFloat(document.getElementById('sim-sentiment').value);
+      const I = parseFloat(document.getElementById('sim-intent').value);
+
+      // S_ij compute
+      const promptScore = M * R * T * I;
+      document.getElementById('result-prompt-score').innerText = promptScore.toFixed(2);
+
+      // Step 2 CS_lj Extraction (Max score is M_max * I_max -> 5 * 2 = 10)
+      const S_max = 10.0;
+      const numPrompts = parseInt(document.getElementById('sim-cluster-count').value) || 1;
+      
+      // We simulate cluster as having similar prompt patterns as our inspected prompt
+      const clusterScore = (promptScore / S_max) * 100;
+      document.getElementById('result-cluster-score').innerText = clusterScore.toFixed(2) + "%";
+
+      // Step 3 Engine score based on weighted cluster simulation
+      // We assume other clusters scale around this base level
+      const wTrans = parseInt(document.getElementById('w-trans').value) / 100;
+      const wComm = parseInt(document.getElementById('w-comm').value) / 100;
+      const wInfo = parseInt(document.getElementById('w-info').value) / 100;
+
+      // Simulate relative variances for demo purposes
+      const transClusterScore = clusterScore;
+      const commClusterScore = clusterScore * 0.8; // slightly less visibility
+      const infoClusterScore = clusterScore * 1.2; // slightly more visibility
+
+      const engineScore = (wTrans * transClusterScore) + (wComm * commClusterScore) + (wInfo * infoClusterScore);
+      document.getElementById('result-engine-score').innerText = Math.min(100, engineScore).toFixed(2) + "%";
+
+      // Step 4 Global Unified GEO calculation across simulated platforms
+      const aChat = parseInt(document.getElementById('a-chatgpt').value) / 100;
+      const aGem = parseInt(document.getElementById('a-gemini').value) / 100;
+      const aCld = parseInt(document.getElementById('a-claude').value) / 100;
+      const aPrp = parseInt(document.getElementById('a-perp').value) / 100;
+
+      // Platform coefficients
+      const chatgptScore = engineScore;
+      const geminiScore = engineScore * 0.9;
+      const claudeScore = engineScore * 0.75;
+      const perpScore = engineScore * 1.1;
+
+      const finalGEO = (aChat * chatgptScore) + (aGem * geminiScore) + (aCld * claudeScore) + (aPrp * perpScore);
+      
+      const geoText = Math.min(100, finalGEO).toFixed(2) + "%";
+      document.getElementById('result-global-score').innerText = geoText;
+      document.getElementById('header-overall-geo').innerText = geoText;
+    }
+
+    // Code copy mechanism
+    function copyCode() {
+      const codeText = document.getElementById('code-block').innerText;
+      
+      // Use document.execCommand fallback for iframe reliability
+      const el = document.createElement('textarea');
+      el.value = codeText;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      // Visual feedback on copy button
+      const copyBtn = document.querySelector('[onclick="copyCode()"]');
+      const originalText = copyBtn.innerText;
+      copyBtn.innerText = "✓ Copied!";
+      copyBtn.classList.add('bg-emerald-600', 'text-white');
+      setTimeout(() => {
+        copyBtn.innerText = originalText;
+        copyBtn.classList.remove('bg-emerald-600', 'text-white');
+      }, 1500);
+    }
+
+    // Run first simulation on document load
+    window.onload = function() {
+      initializeMath(); // Initialize math rendering first
+      runSimulation();
+      // Ensure inspector starts typeset correctly
+      setTimeout(() => {
+         inspectStep('prompt');
+      }, 300);
+    };
+  </script>
+</body>
+</html>
